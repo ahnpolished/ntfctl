@@ -16,11 +16,15 @@ function findApplescriptsDir(): string {
     return envDir;
   }
 
-  // Walk up from the extension's dist/src dir to find the applescripts
+  // 1) Bundled with the extension (production — scripts/ sits next to the built .js files)
+  // 2) Development — walk up from src/ or dist/ to the ntfctl repo root
+  // 3) Absolute path to the submodule under the settings repo
+  const home = process.env.HOME || "/Users/" + (process.env.USER || "taeahn");
   const candidates = [
-    path.resolve(__dirname, "..", "..", ".."), // dev: raycast/src → raycast → notifications/
-    path.resolve(__dirname, "..", "..", "..", "applescripts"), // if they're in an applescripts/ subdir
-    path.resolve(__dirname, "..", ".."), // fallback
+    path.resolve(__dirname, "scripts"),                           // bundled in dist/scripts/
+    path.resolve(__dirname, "..", ".."),                           // dist/ → ntfctl/  OR  src/ → ntfctl/
+    path.resolve(__dirname, "..", "..", ".."),                     // dist/ → macscripts/ (fallback)
+    path.resolve(home, "devs/personal/2026/settings/macscripts/ntfctl"), // absolute submodule path
   ];
 
   for (const dir of candidates) {

@@ -73,6 +73,7 @@
   },
   "scripts": {
     "build": "ray build -e dist -o dist",
+    "postbuild": "mkdir -p dist/scripts && cp ../*.applescript dist/scripts/",
     "dev": "ray develop",
     "fix-lint": "ray lint --fix",
     "lint": "ray lint",

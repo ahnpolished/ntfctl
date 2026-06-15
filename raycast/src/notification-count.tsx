@@ -4,16 +4,20 @@ import * as path from "path";
 import * as fs from "fs";
 
 function findApplescriptsDir(): string {
+  const envDir = process.env.APPLESCRIPTS_DIR;
+  if (envDir && fs.existsSync(envDir)) return envDir;
+  const home = process.env.HOME || "/Users/" + (process.env.USER || "taeahn");
   const candidates = [
-    path.resolve(__dirname, "..", "..", ".."),
+    path.resolve(__dirname, "scripts"),
     path.resolve(__dirname, "..", ".."),
+    path.resolve(home, "devs/personal/2026/settings/macscripts/ntfctl"),
   ];
   for (const dir of candidates) {
     if (fs.existsSync(path.join(dir, "ntfctl-count.applescript"))) {
       return dir;
     }
   }
-  return process.env.APPLESCRIPTS_DIR || path.resolve(__dirname, "..", "..", "..");
+  throw new Error("Cannot find ntfctl applescripts. Set APPLESCRIPTS_DIR.");
 }
 
 interface NotifSummary {
