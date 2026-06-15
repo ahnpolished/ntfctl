@@ -1,25 +1,44 @@
 import { Detail } from "@raycast/api";
 import { execSync } from "child_process";
+import { useEffect, useState } from "react";
 
-export default function Command() {
-  const checks: { name: string; status: string; detail: string }[] = [];
+interface Check {
+  name: string;
+  status: string;
+  detail: string;
+}
+
+function runChecks(): Check[] {
+  const checks: Check[] = [];
 
   // Check 1: Can osascript run at all?
   try {
     execSync("osascript -e 'return \"OK\"'", { timeout: 5000 });
-    checks.push({ name: "osascript available", status: "✅", detail: "osascript binary works" });
-  } catch (e) {
-    checks.push({ name: "osascript available", status: "❌", detail: String(e) });
+    checks.push({
+      name: "osascript available",
+      status: "✅",
+      detail: "osascript binary works",
+    });
+  } catch {
+    checks.push({
+      name: "osascript available",
+      status: "❌",
+      detail: "osascript not found or not executable",
+    });
   }
 
   // Check 2: Can we access System Events?
   try {
     execSync(
       `osascript -e 'tell application "System Events" to return name of first process whose name contains "Finder"'`,
-      { timeout: 5000 }
+      { timeout: 5000 },
     );
-    checks.push({ name: "System Events access", status: "✅", detail: "Can query processes" });
-  } catch (e) {
+    checks.push({
+      name: "System Events access",
+      status: "✅",
+      detail: "Can query processes",
+    });
+  } catch {
     checks.push({
       name: "System Events access",
       status: "❌",
@@ -31,14 +50,22 @@ export default function Command() {
   try {
     const result = execSync(
       `osascript -e 'tell application "System Events" to return name of first process whose name contains "Notification"'`,
-      { timeout: 5000, encoding: "utf-8" }
+      { timeout: 5000, encoding: "utf-8" },
     ).trim();
-    checks.push({ name: "NotificationCenter process", status: "✅", detail: `Found: ${result}` });
-  } catch (e) {
-    checks.push({ name: "NotificationCenter process", status: "❌", detail: String(e) });
+    checks.push({
+      name: "NotificationCenter process",
+      status: "✅",
+      detail: `Found: ${result}`,
+    });
+  } catch {
+    checks.push({
+      name: "NotificationCenter process",
+      status: "❌",
+      detail: "NotificationCenter process not found",
+    });
   }
 
-  // Check 4: Can we read UI elements from NotificationCenter?
+  // Check 4: Can we read UI elements? (opens NC, reads, then closes NC)
   try {
     const result = execSync(
       `osascript -e '
@@ -56,19 +83,26 @@ export default function Command() {
             return "ERR:" & errMsg
           end try
         end tell
+        tell process "ControlCenter"
+          click menu bar item 2 of menu bar 1
+        end tell
       end tell'`,
-      { timeout: 10000, encoding: "utf-8" }
+      { timeout: 10000, encoding: "utf-8" },
     ).trim();
-    checks.push({ name: "Notification Center UI access", status: "✅", detail: result });
-  } catch (e) {
+    checks.push({
+      name: "Notification Center UI access",
+      status: "✅",
+      detail: result,
+    });
+  } catch {
     checks.push({
       name: "Notification Center UI access",
       status: "❌",
-      detail: String(e),
+      detail: "Failed to read NC elements",
     });
   }
 
-  // Check 5: Can we read a notification text element?
+  // Check 5: Can we read notification text? (re-opens NC if closed, then closes)
   try {
     const result = execSync(
       `osascript -e '
@@ -105,15 +139,35 @@ export default function Command() {
           click menu bar item 2 of menu bar 1
         end tell
       end tell'`,
-      { timeout: 10000, encoding: "utf-8" }
+      { timeout: 10000, encoding: "utf-8" },
     ).trim();
-    checks.push({ name: "Read notification text", status: "✅", detail: result });
-  } catch (e) {
+    checks.push({
+      name: "Read notification text",
+      status: "✅",
+      detail: result,
+    });
+  } catch {
     checks.push({
       name: "Read notification text",
       status: "❌",
-      detail: String(e),
+      detail: "Failed to read notification text",
     });
+  }
+
+  return checks;
+}
+
+export default function Command() {
+  const [checks, setChecks] = useState<Check[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setChecks(runChecks());
+    setLoading(false);
+  }, []);
+
+  if (loading) {
+    return <Detail isLoading />;
   }
 
   const md =
