@@ -6,6 +6,10 @@ export default async function Command() {
     runAppleScript("ntfctl-center.applescript");
     await showHUD("🔔 Notification Center toggled");
   } catch (e) {
-    await showToast({ style: Toast.Style.Failure, title: "Failed to toggle Notification Center", message: String(e) });
+    await showToast({
+      style: Toast.Style.Failure,
+      title: "Failed to toggle Notification Center",
+      message: String(e),
+    });
   }
 }

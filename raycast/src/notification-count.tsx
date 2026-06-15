@@ -89,7 +89,7 @@ function fetchNotificationSummary(): NotifSummary | null {
       end if
       return (count as text) & "|||" & output
     end tell'`,
-    { encoding: "utf-8", timeout: 15_000 }
+    { encoding: "utf-8", timeout: 15_000 },
   ).trim();
 
   if (raw === "NO_NOTIFS" || raw === "") return null;
@@ -106,7 +106,11 @@ function fetchNotificationSummary(): NotifSummary | null {
     .filter(Boolean)
     .map((line) => {
       const parts = line.split("|||");
-      return { app: parts[0] || "Unknown", title: parts[1] || "", body: parts[2] || "" };
+      return {
+        app: parts[0] || "Unknown",
+        title: parts[1] || "",
+        body: parts[2] || "",
+      };
     });
 
   return { count: isNaN(count) ? items.length : count, items };
@@ -123,16 +127,23 @@ export default function Command() {
   }
 
   if (error) {
-    const md = "# ⚠️ Error\n\nFailed to count notifications:\n\n```\n" + error + "\n```";
+    const md =
+      "# ⚠️ Error\n\nFailed to count notifications:\n\n```\n" + error + "\n```";
     return <Detail markdown={md} />;
   }
 
   if (!summary || summary.count === 0) {
-    const md = "# 🔔 No Notifications\n\nNotification Center is empty or not accessible.\n\nGrant **Accessibility** permission in:\n**System Settings → Privacy & Security → Accessibility**";
+    const md =
+      "# 🔔 No Notifications\n\nNotification Center is empty or not accessible.\n\nGrant **Accessibility** permission in:\n**System Settings → Privacy & Security → Accessibility**";
     return <Detail markdown={md} />;
   }
 
-  let md = "# 🔔 " + summary.count + " Notification" + (summary.count === 1 ? "" : "s") + "\n\n---\n\n";
+  let md =
+    "# 🔔 " +
+    summary.count +
+    " Notification" +
+    (summary.count === 1 ? "" : "s") +
+    "\n\n---\n\n";
 
   for (const item of summary.items) {
     md += "### " + item.app + "\n";
@@ -143,7 +154,12 @@ export default function Command() {
     md += "\n";
   }
 
-  md += "---\n\n_" + summary.count + " notification" + (summary.count === 1 ? "" : "s") + " waiting in Notification Center._";
+  md +=
+    "---\n\n_" +
+    summary.count +
+    " notification" +
+    (summary.count === 1 ? "" : "s") +
+    " waiting in Notification Center._";
 
   const allText = summary.items
     .map((item) => "[" + item.app + "] " + item.title + "\n" + item.body)
@@ -173,7 +189,10 @@ export default function Command() {
             icon={Icon.Trash}
             shortcut={{ modifiers: ["cmd"], key: "x" }}
             onAction={() => {
-              const scriptPath = path.join(findApplescriptsDir(), "ntfctl-clear.applescript");
+              const scriptPath = path.join(
+                findApplescriptsDir(),
+                "ntfctl-clear.applescript",
+              );
               execSync(`osascript "${scriptPath}"`, { timeout: 15_000 });
             }}
           />

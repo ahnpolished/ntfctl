@@ -21,9 +21,9 @@ function findApplescriptsDir(): string {
   // 3) Absolute path to the submodule under the settings repo
   const home = process.env.HOME || "/Users/" + (process.env.USER || "taeahn");
   const candidates = [
-    path.resolve(__dirname, "scripts"),                           // bundled in dist/scripts/
-    path.resolve(__dirname, "..", ".."),                           // dist/ → ntfctl/  OR  src/ → ntfctl/
-    path.resolve(__dirname, "..", "..", ".."),                     // dist/ → macscripts/ (fallback)
+    path.resolve(__dirname, "scripts"), // bundled in dist/scripts/
+    path.resolve(__dirname, "..", ".."), // dist/ → ntfctl/  OR  src/ → ntfctl/
+    path.resolve(__dirname, "..", "..", ".."), // dist/ → macscripts/ (fallback)
     path.resolve(home, "devs/personal/2026/settings/macscripts/ntfctl"), // absolute submodule path
   ];
 
@@ -37,7 +37,7 @@ function findApplescriptsDir(): string {
   // Last resort — user must have set APPLESCRIPTS_DIR
   throw new Error(
     "Could not find applescript files. Set APPLESCRIPTS_DIR environment variable to the directory containing ntfctl-clear.applescript, e.g.:\n" +
-      '  export APPLESCRIPTS_DIR="/Users/you/path/to/notifications"'
+      '  export APPLESCRIPTS_DIR="/Users/you/path/to/notifications"',
   );
 }
 
@@ -81,7 +81,11 @@ export function runControlAction(action: string): string {
  * without showing the dialog, by using the control script's latest action
  * with output parsing.
  */
-export function getLatestNotificationText(): { app: string; title: string; body: string } | null {
+export function getLatestNotificationText(): {
+  app: string;
+  title: string;
+  body: string;
+} | null {
   try {
     // The unified script shows a dialog; we need to extract the content.
     // Let's use a direct AppleScript call to get just the data.
@@ -101,7 +105,9 @@ export function getLatestNotificationText(): { app: string; title: string; body:
   }
 }
 
-function parseNotificationOutput(raw: string): { app: string; title: string; body: string } | null {
+function parseNotificationOutput(
+  raw: string,
+): { app: string; title: string; body: string } | null {
   const appMatch = raw.match(/App:\s*(.+)/);
   const titleMatch = raw.match(/Title:\s*(.+)/);
   const bodyMatch = raw.match(/Body:\s*(.+)/);

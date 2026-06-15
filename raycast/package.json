@@ -1,10 +1,10 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "ntfctl",
-  "title": "ntfctl",
+  "title": "Ntfctl",
   "description": "ntfctl — control macOS Notification Center from the keyboard \u2014 plus toggle Do Not Disturb \u2014 all from the keyboard via Raycast.",
   "icon": "bell.png",
-  "author": "taeahn",
+  "author": "ahnopologetic",
   "categories": [
     "Productivity",
     "System"

@@ -82,7 +82,7 @@ function fetchLatestNotification(): NotifInfo | null {
       end if
       return appName & "|||" & notifTitle & "|||" & notifBody
     end tell'`,
-    { encoding: "utf-8", timeout: 15_000 }
+    { encoding: "utf-8", timeout: 15_000 },
   ).trim();
 
   if (raw === "NO_NOTIFS" || raw === "") return null;
@@ -105,12 +105,14 @@ export default function Command() {
   }
 
   if (error) {
-    const md = "# ⚠️ Error\n\nFailed to read notifications:\n\n```\n" + error + "\n```";
+    const md =
+      "# ⚠️ Error\n\nFailed to read notifications:\n\n```\n" + error + "\n```";
     return <Detail markdown={md} />;
   }
 
   if (!notif) {
-    const md = "# 🔔 No Notifications\n\nNotification Center is empty or not accessible.\n\nGrant **Accessibility** permission to the app running Raycast in:\n\n**System Settings → Privacy & Security → Accessibility**";
+    const md =
+      "# 🔔 No Notifications\n\nNotification Center is empty or not accessible.\n\nGrant **Accessibility** permission to the app running Raycast in:\n\n**System Settings → Privacy & Security → Accessibility**";
     return <Detail markdown={md} />;
   }
 
@@ -118,9 +120,15 @@ export default function Command() {
     "# 📬  Latest Notification\n\n---\n\n" +
     "|       |                        |\n" +
     "|-------|------------------------|\n" +
-    "| **App**   | " + notif.app + "       |\n" +
-    "| **Title** | " + notif.title + "     |\n" +
-    "| **Body**  | " + notif.body + "      |\n\n" +
+    "| **App**   | " +
+    notif.app +
+    "       |\n" +
+    "| **Title** | " +
+    notif.title +
+    "     |\n" +
+    "| **Body**  | " +
+    notif.body +
+    "      |\n\n" +
     "---\n\n" +
     "_Press ⌘C to copy, or use the actions below._";
 
@@ -151,7 +159,10 @@ export default function Command() {
             shortcut={{ modifiers: ["cmd"], key: "d" }}
             onAction={() => {
               const scriptDir = findApplescriptsDir();
-              const scriptPath = path.join(scriptDir, "ntfctl-dismiss.applescript");
+              const scriptPath = path.join(
+                scriptDir,
+                "ntfctl-dismiss.applescript",
+              );
               execSync(`osascript "${scriptPath}"`, { timeout: 10_000 });
             }}
           />
