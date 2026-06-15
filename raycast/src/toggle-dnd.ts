@@ -13,7 +13,7 @@ export default async function Command() {
     });
     toast.hide();
     await showHUD("🔕 Do Not Disturb toggled");
-  } catch (_e) {
+  } catch {
     toast.hide();
     // The shortcut might not exist — show a helpful message
     await showToast({
