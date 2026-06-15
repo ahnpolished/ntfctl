@@ -25,6 +25,8 @@ declare namespace Preferences {
   export type ToggleDnd = ExtensionPreferences & {}
   /** Preferences accessible in the `toggle-notification-center` command */
   export type ToggleNotificationCenter = ExtensionPreferences & {}
+  /** Preferences accessible in the `diagnostics` command */
+  export type Diagnostics = ExtensionPreferences & {}
 }
 
 declare namespace Arguments {
@@ -40,5 +42,7 @@ declare namespace Arguments {
   export type ToggleDnd = {}
   /** Arguments passed to the `toggle-notification-center` command */
   export type ToggleNotificationCenter = {}
+  /** Arguments passed to the `diagnostics` command */
+  export type Diagnostics = {}
 }
 
